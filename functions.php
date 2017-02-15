@@ -8,6 +8,8 @@
  * a copy of the license is stored at the project root.
  */
 
+# ---- Array Functions
+
 /**
  * gets a array value by the provided path query.
  *
@@ -140,4 +142,54 @@ function array_normalize(array $array): array
     };
 
     return $normalizer($array);
+}
+
+# --- Callback functions
+
+/**
+ * Extracts a closure from the provided callback.
+ *
+ * @param callable $callback
+ * @return Closure
+ */
+function encloseCallback(callable $callback): Closure
+{
+    if ( class_exists(Closure::class) && method_exists(Closure::class, 'fromCallable') ) {
+        return Closure::fromCallable($callback);
+    }
+
+    if ( is_string($callback) && false !== strpos($callback, '::') ) {
+        list($class, $method) = explode('::', $callback);
+        return (new ReflectionClass($class))->getMethod($method)->getClosure();
+    }
+
+    if ( is_array($callback) ) {
+        list($object, $method) = $callback;
+        return (new ReflectionClass($object))->getMethod($method)->getClosure($object);
+    }
+
+    if ( is_object($callback) && ! $callback instanceof Closure ) {
+        return (new ReflectionClass($callback))->getMethod('__invoke')->getClosure($callback);
+    }
+
+    return (new ReflectionFunction($callback))->getClosure();
+}
+
+/**
+ * Extracts a closure from the provided masked callable.
+ *
+ * @param string $pattern
+ * @param string $methodSeparator
+ * @param string $namespace
+ * @return Closure
+ */
+function encloseCallbackPattern(string $pattern, $methodSeparator = '@', $namespace = "\\"): Closure
+{
+    if ( false === strpos($pattern, $methodSeparator) ) {
+        throw new LogicException(
+            "The provided pattern does not contain the provided method separator ({$methodSeparator})"
+        );
+    }
+
+    return encloseCallback(explode($methodSeparator, ltrim($namespace, "\\").$pattern));
 }

@@ -29,3 +29,8 @@ scenarios build in: `array_normalize`.
 ##### Do query path based array functions work directly on the source array?
 
 No, all functions do create a copy of the provided array.
+
+### Implemented global scope callback functions
+
+- `encloseCallback` - creates a Closure of a provided callable, automatically uses `Closure::fromCallable` when available
+- `encloseCallbackPattern` - calls `encloseCallback` after the provided callback pattern (separated by the provided method separator and enhanced by the provided namespace) was converted to a callback.
