@@ -1,0 +1,23 @@
+{
+    "name": "descent/universe",
+    "description": "Descent Framework Standard PHP Functions and Framework Interface and Facades Universal Repository",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthias Kaschubowski",
+            "email": "nihylum@gmail.com"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "./functions.php"
+        ],
+        "psr-4": {
+            "Descent\\Facades\\": "./Facades"
+        }
+    },
+    "require": {
+        "php": ">=7.0"
+    }
+}
