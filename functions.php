@@ -63,12 +63,17 @@ function array_extend(array $array, string $query, $value): array
             return $data;
         }
 
-        if ( array_key_exists($current, $data) && ! empty($stack) ) {
+        if ( empty($stack) ) {
+            $data[$current] = is_array($value) ? array_normalize($value) : $value;
+            return $data;
+        }
+
+        if ( array_key_exists($current, $data) ) {
             $data[$current] = $implant(is_array($data[$current]) ? $data[$current] : [], $stack);
             return $data;
         }
 
-        $data[$current] = $value;
+        $data[$current] = $implant([], $stack);
         return $data;
     };
 
@@ -114,16 +119,8 @@ function array_exclude(array $array, string $query): array
  */
 function array_normalize(array $array): array
 {
-    $normalizer = function($inbound, array $stack) use (&$normalizer)
+    $normalizer = function($inbound) use (&$normalizer)
     {
-        if ( ! empty($stack) ) {
-            $current = array_shift($stack);
-
-            return [
-                $current => $normalizer($inbound, $stack)
-            ];
-        }
-
         if ( ! is_array($inbound) ) {
             return $inbound;
         }
@@ -131,18 +128,16 @@ function array_normalize(array $array): array
         $outbound = [];
 
         foreach ( $inbound as $key => $value ) {
-            if ( false === strpos($key, '.') ) {
-                $outbound[$key] = $value;
+            if ( false !== strpos($key, '.') ) {
+                $outbound = array_extend($outbound, $key, $value);
                 continue;
             }
 
-            $stack = explode('.', $key);
-            $current = array_shift($stack);
-            $outbound[$current] = $normalizer($value, $stack);
+            $outbound[$key] = $normalizer($value);
         }
 
         return $outbound;
     };
 
-    return $normalizer($array, []);
+    return $normalizer($array);
 }
