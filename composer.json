@@ -11,11 +11,8 @@
     ],
     "autoload": {
         "files": [
-            "./functions.php"
-        ],
-        "psr-4": {
-            "Descent\\Facades\\": "./Facades"
-        }
+            "./src/functions.php"
+        ]
     },
     "require": {
         "php": ">=7.0"
