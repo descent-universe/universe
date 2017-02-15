@@ -1,6 +1,6 @@
 {
     "name": "descent/universe",
-    "description": "Descent Framework Standard PHP Functions and Framework Interface and Facades Universal Repository",
+    "description": "Descent Framework Standard PHP Functions",
     "type": "library",
     "license": "MIT",
     "authors": [
