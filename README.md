@@ -1,6 +1,5 @@
 # universe
-Descent Framework Standard PHP Functions and Framework Interface and 
-Facades Universal Repository.
+Descent Framework Standard PHP Functions.
 
 ## Standard PHP Functions
 

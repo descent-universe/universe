@@ -64,7 +64,7 @@ function array_extend(array $array, string $query, $value): array
         }
 
         if ( array_key_exists($current, $data) && ! empty($stack) ) {
-            $data = $implant(is_array($data[$current]) ? $data[$current] : [], $stack);
+            $data[$current] = $implant(is_array($data[$current]) ? $data[$current] : [], $stack);
             return $data;
         }
 
@@ -90,20 +90,14 @@ function array_exclude(array $array, string $query): array
     {
         $current = array_shift($stack);
 
-        if ( empty(trim($current)) ) {
-            return $data;
-        }
-
-        if ( array_key_exists($current, $data) && ! empty($stack) && ! is_array($data[$current]) ) {
-            return $data;
-        }
-
         if ( array_key_exists($current, $data) && ! empty($stack) && is_array($data[$current]) ) {
-            $data = $destroyer($data[$current], $stack);
-            return $data;
+            $data[$current] = $destroyer($data[$current], $stack);
         }
 
-        unset($data[$current]);
+        if ( array_key_exists($current, $data) && empty($stack) ) {
+            unset($data[$current]);
+        }
+
         return $data;
     };
 
@@ -120,7 +114,7 @@ function array_exclude(array $array, string $query): array
  */
 function array_normalize(array $array): array
 {
-    $normalizer = function(array $inbound, array $stack) use (&$normalizer): array
+    $normalizer = function($inbound, array $stack) use (&$normalizer)
     {
         if ( ! empty($stack) ) {
             $current = array_shift($stack);
@@ -130,10 +124,14 @@ function array_normalize(array $array): array
             ];
         }
 
+        if ( ! is_array($inbound) ) {
+            return $inbound;
+        }
+
         $outbound = [];
 
         foreach ( $inbound as $key => $value ) {
-            if ( false !== strpos($key, '.') ) {
+            if ( false === strpos($key, '.') ) {
                 $outbound[$key] = $value;
                 continue;
             }
@@ -146,5 +144,5 @@ function array_normalize(array $array): array
         return $outbound;
     };
 
-    return $normalizer($array);
+    return $normalizer($array, []);
 }
