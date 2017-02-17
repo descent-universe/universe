@@ -45,6 +45,45 @@ function array_fetch(array $array, string $query, $default = null)
 }
 
 /**
+ * pings an array query path for existance.
+ *
+ * @param array $array
+ * @param string $query
+ * @return bool
+ */
+function array_ping(array $array, string $query): bool
+{
+    $ping = function($inbound, array $stack) use (&$ping): bool
+    {
+        $current = array_shift($stack);
+
+        if ( empty($stack) ) {
+            return true;
+        }
+
+        if ( is_array($inbound) && array_key_exists($current, $inbound) ) {
+            return $ping($inbound[$current], $stack);
+        }
+
+        return false;
+    };
+
+    return empty($query) ? false : $ping($array, explode('.', $query));
+}
+
+/**
+ * guarantees that the provided query path is an array.
+ *
+ * @param array $array
+ * @param string $query
+ * @return array
+ */
+function array_touch(array $array, string $query): array
+{
+    return array_extend($array, $query, []);
+}
+
+/**
  * sets a array value by the provided path query.
  *
  * @api 1.0.0

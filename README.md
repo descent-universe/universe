@@ -13,6 +13,8 @@ Descent Framework.
 - `array_extend` - extends an given array by the provided query path and value
 - `array_exclude` - removes a value based on the provided query path
 - `array_normalize` - normalizes a array based on query path notation
+- `array_ping` - checks whether a query path exists or not
+- `array_touch` - guarantees that a query path is an array
 
 See [Functions.php](functions.php).
  
